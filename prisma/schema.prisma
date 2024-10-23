@@ -17,6 +17,20 @@ datasource db {
 model Template{
   id          Int    @id @default(autoincrement()) 
   description String
+  status      Boolean  @default(true)
   createdAt   DateTime @default(now())  
   updatedAt   DateTime @updatedAt 
+}
+
+
+model User{
+  id         Int  @id @default(autoincrement()) 
+  full_name  String
+  first_name String
+  last_name  String
+  email      String 
+  password   String
+  status      Boolean  @default(true)
+  createdAt   DateTime @default(now()) 
+  last_password_update DateTime @updatedAt 
 }

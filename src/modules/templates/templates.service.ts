@@ -12,6 +12,11 @@ export class TemplatesService extends PrismaClient implements OnModuleInit {
   }
   create(createTemplateDto: CreateTemplateDto) {
     return 'This action adds a new template';
+
+    //para usar el create con prisma se usa asi 
+    // return this.template.create({
+    //   data: createTemplateDto,
+    // });
   }
 
   findAll() {

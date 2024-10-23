@@ -1,11 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column,PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('Template')
 export class Template {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ type: 'int' })
     id: number; 
 
     @Column({ type: 'nvarchar' })
     description: string;
+    
+    @Column({ type: 'boolean' })
+    status: boolean;
 }

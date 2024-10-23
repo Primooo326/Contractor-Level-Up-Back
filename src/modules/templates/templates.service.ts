@@ -1,37 +1,68 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger, Query, NotFoundException } from '@nestjs/common';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { PrismaClient } from '@prisma/client';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { Template } from './entities/template.entity';
+import { PrismaService } from '../prisma-config/prisma.service';
+
+
 
 @Injectable()
-export class TemplatesService extends PrismaClient implements OnModuleInit {
-    private readonly logger = new Logger('ProductsService')  
-    onModuleInit() {
-    this.$connect();
-    this.logger.log('database connected');
+export class TemplatesService  {
+   
+  constructor(private readonly prisma: PrismaService) { }
+  async findAll(paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
+    const totalPages = await this.prisma.template.count();
+    const lastPage = Math.ceil(totalPages / limit);
+
+    return {
+      data: await this.prisma.template.findMany({
+        where: { status: true },
+        skip: (page - 1) * limit,
+        take: limit
+      }),
+      meta: {
+        total: totalPages,
+        page: page,
+        lastPage: lastPage,
+      }
+    }
+
   }
   create(createTemplateDto: CreateTemplateDto) {
-    return 'This action adds a new template';
-
-    //para usar el create con prisma se usa asi 
-    // return this.template.create({
-    //   data: createTemplateDto,
-    // });
+    
+     return this.prisma.template.create({data: createTemplateDto});
   }
 
-  findAll() {
-    return `This action returns all templates`;
+   async findOne(id: number) {
+     const template = await this.prisma.template.findFirst({
+       where: { id },
+     });
+
+     if (!template) {
+       throw new NotFoundException(`Template with ID ${id} not found`);
+     }
+
+     return template;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} template`;
+  async update(id: number, updateTemplateDto: UpdateTemplateDto) {
+    await this.findOne(id);
+    return this.prisma.template.update({where: { id },data: updateTemplateDto,});
   }
 
-  update(id: number, updateTemplateDto: UpdateTemplateDto) {
-    return `This action updates a #${id} template`;
+  async remove(id: number) {
+    const template = await this.findOne(id); 
+    if (!template) {
+      throw new NotFoundException(`Template with ID ${id} not found`);
+    }
+
+    return await this.prisma.template.update({
+      where: { id },
+      data: { status: false }
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} template`;
-  }
 }

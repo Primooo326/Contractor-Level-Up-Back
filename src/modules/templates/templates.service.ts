@@ -1,9 +1,7 @@
-import { Injectable, OnModuleInit, Logger, Query, NotFoundException } from '@nestjs/common';
+import { Injectable,NotFoundException } from '@nestjs/common';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
-import { PrismaClient } from '@prisma/client';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { Template } from './entities/template.entity';
 import { PrismaService } from '../prisma-config/prisma.service';
 
 
@@ -14,7 +12,7 @@ export class TemplatesService  {
   constructor(private readonly prisma: PrismaService) { }
   async findAll(paginationDto: PaginationDto) {
     const { page, limit } = paginationDto;
-    const totalPages = await this.prisma.template.count();
+    const totalPages = await this.prisma.template.count({ where: { status: true }});
     const lastPage = Math.ceil(totalPages / limit);
 
     return {
@@ -47,7 +45,6 @@ export class TemplatesService  {
 
      return template;
   }
-
   async update(id: number, updateTemplateDto: UpdateTemplateDto) {
     await this.findOne(id);
     return this.prisma.template.update({where: { id },data: updateTemplateDto,});
@@ -64,5 +61,4 @@ export class TemplatesService  {
       data: { status: false }
     });
   }
-
 }

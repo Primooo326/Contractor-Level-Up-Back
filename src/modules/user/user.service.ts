@@ -1,17 +1,31 @@
-import { Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma-config/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) { }
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({ data: createUserDto });
+  async create(data: CreateUserDto) {
+
+    const encryptedPassword = await this.encryptPassword(data.password);
+    const user = await this.prisma.user.create({
+      data: {
+        email: data.email,
+        password: encryptedPassword,
+        full_name: data.full_name,
+        first_name: data.first_name,
+        last_name: data.last_name,
+
+      }
+    });
+
+    return user;
   }
 
- async  findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto) {
     const { page, limit } = paginationDto;
     const totalPages = await this.prisma.user.count({ where: { status: true } });
     const lastPage = Math.ceil(totalPages / limit);
@@ -57,5 +71,14 @@ export class UserService {
       where: { id },
       data: { status: false }
     });
+  }
+
+  private async encryptPassword(text: string): Promise<string> {
+    const algorithm = 'aes-256-ecb';
+    const encryptionKey = process.env.ENCRYPTION_KEY; // Asegúrate de tener esta variable en tu .env
+    const cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey), null);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
   }
 }

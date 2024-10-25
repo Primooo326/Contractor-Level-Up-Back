@@ -30,24 +30,40 @@ export class UserService {
     const totalPages = await this.prisma.user.count({ where: { status: true } });
     const lastPage = Math.ceil(totalPages / limit);
 
+    const users = await this.prisma.user.findMany({
+      where: { status: true },
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        id: true,
+        email: true,
+        full_name: true,
+        first_name:true,
+        last_name:true
+      },
+    });
+
     return {
-      data: await this.prisma.user.findMany({
-        where: { status: true },
-        skip: (page - 1) * limit,
-        take: limit
-      }),
+      data: users,
       meta: {
         total: totalPages,
         page: page,
         lastPage: lastPage,
       }
-    }
-
+    };
   }
 
   async findOne(id: number) {
     const template = await this.prisma.user.findFirst({
       where: { id },
+      select: {
+        id: true,              
+        email: true,
+        full_name:true,
+        first_name:true,
+        last_name:true
+      },
+        
     });
 
     if (!template) {

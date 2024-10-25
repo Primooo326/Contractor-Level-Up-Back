@@ -62,7 +62,6 @@ export class AuthService {
     };
 
   }
-
   async encryptPassword(text: string): Promise<string> {
     const algorithm = 'aes-256-ecb';
     const encryptionKey = process.env.ENCRYPTION_KEY;

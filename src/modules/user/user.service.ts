@@ -4,12 +4,60 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma-config/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import * as crypto from 'crypto';
+import axios from 'axios';
+
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) { }
-  async create(data: CreateUserDto) {
 
+async  loadUsers() {
+  try {
+    const response = await axios.get(
+      'https://services.leadconnectorhq.com/users/?locationId=7gcRvmSzndyAWZHzYU01',
+      {
+        headers: {
+          Authorization: 'Bearer pit-4cc3bf3a-e794-4977-a1dd-6d2ae15a2971',
+          'Content-Type': 'application/json',
+          version: '2021-07-28',
+        },
+        timeout: 10000,
+      }
+    );
+    const users = response.data?.users;
+    if (!users || !Array.isArray(users)) {
+      throw new Error('Formato de datos inválido o no se encontraron usuarios.');
+    }
+
+    const encryptedPassword = await this.encryptPassword('Contractor_2024');
+
+    const formattedUsers = users.map(user => ({
+      full_name: user.name || 'N/A',
+      first_name: user?.firstName || null,
+      last_name: user?.lastName || null,
+      email: user.email,
+      password: encryptedPassword,
+    }));
+
+    for (const user of formattedUsers) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (!existingUser) {
+        await this.prisma.user.create({
+          data: user,
+        });
+      }
+    }
+
+    console.log('Usuarios cargados exitosamente');
+  } catch (error) {
+    
+    console.error('Error al cargar usuarios:', error.message || error);
+  }
+}
+  async create(data: CreateUserDto) {
     const encryptedPassword = await this.encryptPassword(data.password);
     const user = await this.prisma.user.create({
       data: {
@@ -27,11 +75,10 @@ export class UserService {
 
   async findAll(paginationDto: PaginationDto) {
     const { page, limit } = paginationDto;
-    const totalPages = await this.prisma.user.count({ where: { status: true } });
+    const totalPages = await this.prisma.user.count();
     const lastPage = Math.ceil(totalPages / limit);
 
     const users = await this.prisma.user.findMany({
-      where: { status: true },
       skip: (page - 1) * limit,
       take: limit,
       select: {
@@ -39,7 +86,8 @@ export class UserService {
         email: true,
         full_name: true,
         first_name:true,
-        last_name:true
+        last_name:true,
+        status: true
       },
     });
 
@@ -61,7 +109,8 @@ export class UserService {
         email: true,
         full_name:true,
         first_name:true,
-        last_name:true
+        last_name:true,
+        status:true
       },
         
     });
@@ -91,7 +140,7 @@ export class UserService {
 
   private async encryptPassword(text: string): Promise<string> {
     const algorithm = 'aes-256-ecb';
-    const encryptionKey = process.env.ENCRYPTION_KEY; // Asegúrate de tener esta variable en tu .env
+    const encryptionKey = process.env.ENCRYPTION_KEY; 
     const cipher = crypto.createCipheriv(algorithm, Buffer.from(encryptionKey), null);
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');

@@ -33,12 +33,13 @@ async  loadUsers() {
 
     const formattedUsers = users.map(user => ({
       full_name: user.name || 'N/A',
+      idUser_High_Level:user.id,
       first_name: user?.firstName || null,
       last_name: user?.lastName || null,
       email: user.email,
       password: encryptedPassword,
     }));
-
+    let successCount = 0;
     for (const user of formattedUsers) {
       const existingUser = await this.prisma.user.findUnique({
         where: { email: user.email },
@@ -48,13 +49,16 @@ async  loadUsers() {
         await this.prisma.user.create({
           data: user,
         });
+        successCount++;
       }
     }
 
     console.log('Usuarios cargados exitosamente');
+    return { message: `${successCount} usuarios cargados exitosamente` }; 
   } catch (error) {
     
     console.error('Error al cargar usuarios:', error.message || error);
+    return { error: error.message || 'Error al cargar usuarios' }; 
   }
 }
   async create(data: CreateUserDto) {
@@ -83,6 +87,7 @@ async  loadUsers() {
       take: limit,
       select: {
         id: true,
+        idUser_High_Level: true,
         email: true,
         full_name: true,
         first_name:true,
@@ -105,7 +110,8 @@ async  loadUsers() {
     const template = await this.prisma.user.findFirst({
       where: { id },
       select: {
-        id: true,              
+        id: true,   
+        idUser_High_Level:true,           
         email: true,
         full_name:true,
         first_name:true,

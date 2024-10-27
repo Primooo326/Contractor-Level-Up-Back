@@ -6,6 +6,9 @@ export class User {
     id: number;
 
     @Column({ type: 'varchar' })
+    idUser_High_Level:string
+
+    @Column({ type: 'varchar' })
     full_name: string;
 
     @Column({ type: 'varchar' })

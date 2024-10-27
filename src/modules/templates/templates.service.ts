@@ -19,7 +19,10 @@ export class TemplatesService  {
       data: await this.prisma.template.findMany({
         where: { status: true },
         skip: (page - 1) * limit,
-        take: limit
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
       }),
       meta: {
         total: totalPages,

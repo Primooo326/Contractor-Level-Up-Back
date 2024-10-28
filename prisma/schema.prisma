@@ -36,3 +36,20 @@ model User{
   createdAt   DateTime @default(now()) 
   last_password_update DateTime @updatedAt 
 }
+
+model phoneNumber{
+  id   Int  @id @default(autoincrement()) 
+  sidHigh_Level String  
+  phoneNumber String   @unique
+  friendlyName String
+  countryCode String
+  fax Boolean
+  voice Boolean
+  sms Boolean
+  mms Boolean
+  type String
+  status    Boolean  @default(true)
+  isGroupConversationEnabled Boolean
+  createdAt   DateTime @default(now()) 
+  updatedAt   DateTime @updatedAt 
+}

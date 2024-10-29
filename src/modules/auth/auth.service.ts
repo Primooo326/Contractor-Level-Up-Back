@@ -21,6 +21,7 @@ export class AuthService {
         email: true,
         password: true,
         passwordUpdateDate: true,
+        is_admin: true,
       },
     });
 
@@ -33,7 +34,7 @@ export class AuthService {
       throw new UnauthorizedException('Contraseña incorrecta');
     }
 
-    const payload = { userId: findUser.id, userName: findUser.full_name, userEmail: findUser.email};
+    const payload = { userId: findUser.id, userName: findUser.full_name, userEmail: findUser.email, isAdmin: findUser.is_admin};
     const token = this.jwtService.sign(payload, { expiresIn: '1d' });
 
     const resetPass = this.validateUpdatePass(findUser.passwordUpdateDate ?? null);

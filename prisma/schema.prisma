@@ -30,6 +30,8 @@ model User{
   first_name String
   last_name  String
   email      String   @unique
+  is_admin   Boolean?
+  messages_minute Int?
   password   String
   passwordUpdateDate DateTime?
   status      Boolean  @default(true)

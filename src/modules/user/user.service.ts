@@ -65,12 +65,14 @@ async  loadUsers() {
     const encryptedPassword = await this.encryptPassword(data.password);
     const user = await this.prisma.user.create({
       data: {
+        idUser_High_Level: data.idUser_High_Level,
         email: data.email,
         password: encryptedPassword,
         full_name: data.full_name,
         first_name: data.first_name,
         last_name: data.last_name,
-
+        is_admin: data.is_admin,
+        messages_minute: data.messages_minute,
       }
     });
 
@@ -116,7 +118,9 @@ async  loadUsers() {
         full_name:true,
         first_name:true,
         last_name:true,
-        status:true
+        status:true,
+        is_admin:true,
+        messages_minute:true
       },
         
     });
@@ -129,9 +133,19 @@ async  loadUsers() {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    await this.findOne(id);
-    return this.prisma.user.update({ where: { id }, data: updateUserDto, });
-  }
+    const user = await this.findOne(id);
+  
+    if (user.is_admin) {
+      await this.prisma.user.updateMany({
+        data: { messages_minute: updateUserDto.messages_minute },
+      });
+    }
+  
+    return this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
+  }  
 
   async remove(id: number) {
     const user = await this.findOne(id);

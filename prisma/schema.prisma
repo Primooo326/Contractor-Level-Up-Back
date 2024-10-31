@@ -34,7 +34,19 @@ model User{
   messages_minute Int?
   password   String
   passwordUpdateDate DateTime?
+  messageLogs    UserMessageLog[]
   status      Boolean  @default(true)
   createdAt   DateTime @default(now()) 
   last_password_update DateTime @updatedAt 
+}
+
+model UserMessageLog {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  messageContent String
+  sentAt         DateTime @default(now())
+  
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, sentAt])
 }

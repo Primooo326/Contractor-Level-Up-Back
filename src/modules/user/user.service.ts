@@ -1,15 +1,42 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma-config/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import * as crypto from 'crypto';
 import axios from 'axios';
+import { MessageDto } from './dto/message-user.dto';
 
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) { }
+
+  async Messages(filters: MessageDto) {
+    const { userIds, fechaInicial, fechaFinal } = filters;
+
+
+    const ids = userIds ? userIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id)) : [];
+    const fechaInicio = fechaInicial ? new Date(fechaInicial) : new Date(new Date().setHours(0, 0, 0, 0));
+    const fechaFin = fechaFinal ? new Date(fechaFinal) : new Date();
+
+    const whereConditions: any = {
+      sentAt: {
+        gte: fechaInicio,
+        lte: fechaFin,
+      },
+    };
+    if (userIds && userIds.length > 0) {
+      whereConditions.userId = { in:ids };
+    }
+    const messageCount = await this.prisma.userMessageLog.count({
+      where: whereConditions,
+    });
+
+    return { messageCount };
+ 
+  }
+
 
 async  loadUsers() {
   try {

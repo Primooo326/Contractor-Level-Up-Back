@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { JwtAuthGuard } from 'src/common/jwt/jwt-auth.guard';
+import { MessageDto } from './dto/message-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -12,6 +13,11 @@ export class UserController {
   @Post('load')
   async loadUsersFromApi() {
     return await this.userService.loadUsers();
+  }
+
+  @Get('count')
+  async countMessages(@Query() filters: MessageDto) {
+    return await this.userService.Messages(filters);
   }
   @UseGuards(JwtAuthGuard)
   @Post()

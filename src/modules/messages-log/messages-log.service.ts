@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma-config/prisma.service';
 import { MessageDto } from '../user/dto/message-user.dto';
 import { CreateMessageLogDto } from './dto/create-message-log.dto';
 import { UserLoginDto } from 'src/common/dto/user-login.dto';
+import { ValidateCountDto } from './dto/validate-count.dto';
 
 @Injectable()
 export class MessagesLogService {
@@ -42,10 +43,48 @@ export class MessagesLogService {
                 userId: user.userId,
                 toNumber: dto.toNumber,
                 messageContent: dto.messageContent,
-                sentAt: now.toISOString(),
+                sentAt: now,
             }
         });
 
         return userMessageLog;
+    }
+
+    async validateCount(dto: ValidateCountDto, user: UserLoginDto) {
+        const userInfo = await this.prisma.user.findFirst({
+            where: { id: user.userId },
+        });
+
+        if (!userInfo) {
+            throw new Error('Usuario no encontrado');
+        }
+
+        const { messages_minute } = userInfo;
+
+        const oneMinuteAgo = new Date(new Date().getTime() - 60 * 1000);
+        oneMinuteAgo.setHours(oneMinuteAgo.getHours() - 5);
+        const amountMessagesMinute = await this.prisma.userMessageLog.count({
+            where: {
+                userId: user.userId,
+                sentAt: {
+                    gte: oneMinuteAgo,
+                },
+            },
+        });
+
+        const { amountSend } = dto;
+        const amountMessagesAllowed = messages_minute;
+
+        const canSendMessages = (amountMessagesMinute + amountSend) <= amountMessagesAllowed;
+
+        return {
+            amountMessagesSend: amountSend,
+            amountMessagesAllowed,
+            amountMessagesMinute,
+            canSendMessages,
+            message: canSendMessages
+                ? 'Puede enviar más mensajes.'
+                : 'No puede enviar más mensajes, ha alcanzado el límite permitido.',
+        };
     }
 }

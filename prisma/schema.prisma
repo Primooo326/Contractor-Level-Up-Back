@@ -38,6 +38,7 @@ model User{
   status      Boolean  @default(true)
   createdAt   DateTime @default(now()) 
   last_password_update DateTime @updatedAt 
+  lastShipmentDate   DateTime?
 }
 
 model UserMessageLog {
@@ -45,7 +46,7 @@ model UserMessageLog {
   userId         Int
   toNumber String?
   messageContent String?
-  sentAt         DateTime @default(now())
+  sentAt         DateTime?
   
   user           User     @relation(fields: [userId], references: [id])
 

@@ -43,7 +43,8 @@ model User{
 model UserMessageLog {
   id             Int      @id @default(autoincrement())
   userId         Int
-  messageContent String
+  toNumber String?
+  messageContent String?
   sentAt         DateTime @default(now())
   
   user           User     @relation(fields: [userId], references: [id])

@@ -27,12 +27,12 @@ export class AuthService {
     });
 
     if (!findUser) {
-      throw new NotFoundException('Usuario no encontrado');
+      throw new NotFoundException('Usuario y/o la contraseña son incorrectas');
     }
 
     const encrypted = await this.encryptPassword(password);
     if (encrypted !== findUser.password) {
-      throw new UnauthorizedException('Contraseña incorrecta');
+      throw new UnauthorizedException('Usuario y/o la contraseña son incorrectas');
     }
 
     const payload = { userId: findUser.id, userName: findUser.full_name, userEmail: findUser.email, isAdmin: findUser.is_admin, idUser_High_Level: findUser.idUser_High_Level};

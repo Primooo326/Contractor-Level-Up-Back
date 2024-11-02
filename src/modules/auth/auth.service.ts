@@ -45,7 +45,6 @@ export class AuthService {
   }
 
   private validateUpdatePass(passwordUpdateDate: Date | null): boolean {
-
     if (!passwordUpdateDate) {
       return true;
     }

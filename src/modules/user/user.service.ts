@@ -5,11 +5,42 @@ import { PrismaService } from '../prisma-config/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import * as crypto from 'crypto';
 import axios from 'axios';
+import { ChangePassDto } from './dto/change-pass.dto';
+import { UserLoginDto } from 'src/common/dto/user-login.dto';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) { }
 
+  async changePassword(dto: ChangePassDto, user: UserLoginDto) {
+    const { newPassword, repeatPassword } = dto;
+
+    if (newPassword !== repeatPassword) throw new NotFoundException(`Las contraseñas no coinciden`);
+
+    const findUser = await this.prisma.user.findFirst({
+      where: { id: user.userId },
+    })
+
+    const encryptedPassword = await this.encryptPassword(newPassword);
+
+    if (encryptedPassword === findUser.password) throw new NotFoundException(`La contraseña no puede ser igual a la anterior`);
+
+    const now = new Date();
+    now.setHours(now.getHours() - 5);
+
+    await this.prisma.user.update({
+      where: { id: user.userId },
+      data: {
+        password: encryptedPassword,
+        passwordUpdateDate: now
+      },
+    });
+
+    return {
+      statusCode: 200,
+      message: 'Contraseña actualizada con éxito',
+    }
+  }
 
   async loadUsers() {
     try {

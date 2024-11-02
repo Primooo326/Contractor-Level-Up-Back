@@ -1,14 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { JwtAuthGuard } from 'src/common/jwt/jwt-auth.guard';
+import { ChangePassDto } from './dto/change-pass.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
+
+  @Post('changePassword')
+  async changePassword(@Body() dto: ChangePassDto, @Request() req) {
+    return await this.userService.changePassword(dto, req.user);
+  }
 
   @Post('load')
   async loadUsersFromApi() {

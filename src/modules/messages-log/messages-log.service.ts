@@ -84,8 +84,8 @@ export class MessagesLogService {
             canSendMessages: amountMessagesAllowed - amountMessagesMinute,
             canSend: canSendMessages,
             message: canSendMessages
-                ? 'Puede enviar más mensajes.'
-                : 'No puede enviar más mensajes, ha alcanzado el límite permitido.',
+                ? 'Puede enviar más mensajes'
+                : 'Has alcanzado el límite de mensajes permitidos. Por favor, espera un minuto antes de intentar enviar más mensajes',
         };
     }
 }

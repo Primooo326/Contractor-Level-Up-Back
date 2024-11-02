@@ -78,10 +78,11 @@ export class MessagesLogService {
         const canSendMessages = (amountMessagesMinute + amountSend) <= amountMessagesAllowed;
 
         return {
-            amountMessagesSend: amountSend,
-            amountMessagesAllowed,
-            amountMessagesMinute,
-            canSendMessages,
+            messagesSend: amountSend,
+            messagesAllowed: amountMessagesAllowed,
+            messagesMinute: amountMessagesMinute,
+            canSendMessages: amountMessagesAllowed - amountMessagesMinute,
+            canSend: canSendMessages,
             message: canSendMessages
                 ? 'Puede enviar más mensajes.'
                 : 'No puede enviar más mensajes, ha alcanzado el límite permitido.',

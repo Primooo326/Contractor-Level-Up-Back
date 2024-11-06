@@ -32,10 +32,10 @@ export class TemplatesService  {
     }
 
   }
-  create(createTemplateDto: CreateTemplateDto) {
+  // create(createTemplateDto: CreateTemplateDto) {
     
-     return this.prisma.template.create({data: createTemplateDto});
-  }
+  //   return this.prisma.template.create({ data: createTemplateDto});
+  // }
 
    async findOne(id: number) {
      const template = await this.prisma.template.findFirst({

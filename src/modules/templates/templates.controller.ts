@@ -9,11 +9,11 @@ import { JwtAuthGuard } from 'src/common/jwt/jwt-auth.guard';
 @Controller('templates')
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  create(@Body() createTemplateDto: CreateTemplateDto) {
-    return this.templatesService.create(createTemplateDto);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Post()
+  // create(@Body() createTemplateDto: CreateTemplateDto) {
+  //   return this.templatesService.create(createTemplateDto);
+  // }
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {

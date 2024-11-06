@@ -61,13 +61,14 @@ export class MessagesLogService {
 
         const { messages_minute } = userInfo;
 
-        const oneMinuteAgo = new Date(new Date().getTime() - 60 * 1000);
-        oneMinuteAgo.setHours(oneMinuteAgo.getHours() - 5);
-        const amountMessagesMinute = await this.prisma.userMessageLog.count({
+        const oneDayAgo = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+        oneDayAgo.setHours(oneDayAgo.getHours() - 5);
+
+        const amountMessagesDay = await this.prisma.userMessageLog.count({
             where: {
                 userId: user.userId,
                 sentAt: {
-                    gte: oneMinuteAgo,
+                    gte: oneDayAgo,
                 },
             },
         });
@@ -75,17 +76,17 @@ export class MessagesLogService {
         const { amountSend } = dto;
         const amountMessagesAllowed = messages_minute;
 
-        const canSendMessages = (amountMessagesMinute + amountSend) <= amountMessagesAllowed;
+        const canSendMessages = (amountMessagesDay + amountSend) <= amountMessagesAllowed;
 
         return {
             messagesSend: amountSend,
             messagesAllowed: amountMessagesAllowed,
-            messagesMinute: amountMessagesMinute,
-            canSendMessages: amountMessagesAllowed - amountMessagesMinute,
+            messagesDay: amountMessagesDay,
+            canSendMessages: amountMessagesAllowed - amountMessagesDay,
             canSend: canSendMessages,
             message: canSendMessages
                 ? 'Puede enviar más mensajes'
-                : 'Has alcanzado el límite de mensajes permitidos. Por favor, espera un minuto antes de intentar enviar más mensajes',
+                : 'Has alcanzado el límite de mensajes permitidos por día. Por favor, espera hasta mañana para enviar más mensajes',
         };
     }
 }

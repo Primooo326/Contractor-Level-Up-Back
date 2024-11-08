@@ -52,5 +52,16 @@ model UserMessageLog {
   
   user           User     @relation(fields: [userId], references: [id])
 
-  @@index([userId, sentAt])
+  @@index([userId, sentAt])  
 }
+
+ model phoneNumber{
+  id             Int     @id @default(autoincrement())
+  phoneNumber    String
+  friendlyName   String
+  sid            String
+  countryCode    String
+  status     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt 
+ }

@@ -4,9 +4,10 @@ import { UserModule } from './modules/user/user.module';
 import { PrismaModule } from './modules/prisma-config/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MessagesLogModule } from './modules/messages-log/messages-log.module';
+import { PhoneModule } from './modules/phone/phone.module';
 
 
 @Module({
-  imports: [TemplatesModule, UserModule, PrismaModule, AuthModule, MessagesLogModule],
+  imports: [TemplatesModule, UserModule, PrismaModule, AuthModule, MessagesLogModule, PhoneModule],
 })
 export class AppModule { }

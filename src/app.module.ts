@@ -5,9 +5,10 @@ import { PrismaModule } from './modules/prisma-config/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MessagesLogModule } from './modules/messages-log/messages-log.module';
 import { PhoneModule } from './modules/phone/phone.module';
+import { AssignmentModule } from './modules/assignment/assignment.module';
 
 
 @Module({
-  imports: [TemplatesModule, UserModule, PrismaModule, AuthModule, MessagesLogModule, PhoneModule],
+  imports: [TemplatesModule, UserModule, PrismaModule, AuthModule, MessagesLogModule, PhoneModule, AssignmentModule],
 })
 export class AppModule { }

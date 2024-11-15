@@ -6,9 +6,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { MessagesLogModule } from './modules/messages-log/messages-log.module';
 import { PhoneModule } from './modules/phone/phone.module';
 import { AssignmentModule } from './modules/assignment/assignment.module';
+import { ProyectsModule } from './modules/proyects/proyects.module';
 
 
 @Module({
-  imports: [TemplatesModule, UserModule, PrismaModule, AuthModule, MessagesLogModule, PhoneModule, AssignmentModule],
+  imports: [TemplatesModule, UserModule, PrismaModule, AuthModule, MessagesLogModule, PhoneModule, AssignmentModule, ProyectsModule],
 })
 export class AppModule { }

@@ -5,6 +5,9 @@ export class Assignment {
     id: number; 
     
     @Column()
+    idu_ser:string;
+    
+    @Column()
     iduser_high_level:string;
 
     @Column()

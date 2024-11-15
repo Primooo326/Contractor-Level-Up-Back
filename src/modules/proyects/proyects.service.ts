@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAssignmentDto } from './dto/create-assignment.dto';
-import { UpdateAssignmentDto } from './dto/update-assignment.dto';
+import { CreateProyectDto } from './dto/create-proyect.dto';
+import { UpdateProyectDto } from './dto/update-proyect.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { mysqlConfig } from 'src/config/mysql.config';
 
 @Injectable()
-export class AssignmentService {
+export class ProyectsService {
   private pool = mysqlConfig;
+ async create(createProyectDto: CreateProyectDto) {
+    const { name_proyect } = createProyectDto;
+    const query = 'INSERT INTO proyects (name_proyect) VALUES (?)';
+   const values = [name_proyect];
 
-
-  async create(createAssignmentDto: CreateAssignmentDto) {
-    const assignment = createAssignmentDto
-    const query = 'INSERT INTO assignment (id_user,iduser_high_level,contact_id,full_name_contact,first_name_contact,last_name_contact,email,phone_contact) VALUES (?,?,?,?,?,?,?,?)';
-    const values = [assignment];
     try {
       const result = await this.pool.promise().query(query, values);
-      return result;
+      return result; 
     } catch (error) {
       throw new Error('Error creating project: ' + error.message);
     }
@@ -23,13 +22,11 @@ export class AssignmentService {
 
   async findAll(paginationDto: PaginationDto) {
     const { page, limit } = paginationDto;
-    const [totalRowsResult] = await this.pool.promise().query('SELECT COUNT(*) AS total FROM assignment WHERE estado = ?', [true]);
-
+    const [totalRowsResult] = await this.pool.promise().query('SELECT COUNT(*) AS total FROM proyects WHERE estado = ?', [true]);
     const totalPages = totalRowsResult[0].total;
     const lastPage = Math.ceil(totalPages / limit);
-
     const [rows] = await this.pool.promise().query(
-      'SELECT * FROM assignment WHERE estado = ? ORDER BY ID DESC LIMIT ? OFFSET ?',
+      'SELECT * FROM proyects WHERE estado = ? ORDER BY ID DESC LIMIT ? OFFSET ?',
       [true, limit, (page - 1) * limit]
     );
 
@@ -45,20 +42,20 @@ export class AssignmentService {
 
   async findOne(id: number) {
     const [rows] = await this.pool.promise().query(
-      'SELECT * FROM assignment WHERE estado = ? AND ID = ? LIMIT 1',
+      'SELECT * FROM proyects WHERE estado = ? AND ID = ? LIMIT 1',
       [true, id]
     );
     if (Array.isArray(rows) && rows.length === 0) {
-      throw new Error('no assignment found with the id ${id}');
+      throw new Error('Project not found');
     }
     return rows[0];
   }
 
-  update(id: number, updateAssignmentDto: UpdateAssignmentDto) {
-    return `This action updates a #${id} assignment`;
+  update(id: number, updateProyectDto: UpdateProyectDto) {
+    
   }
 
   remove(id: number) {
-    return `This action removes a #${id} assignment`;
+    return `This action removes a #${id} proyect`;
   }
 }

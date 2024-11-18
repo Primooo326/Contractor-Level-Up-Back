@@ -40,12 +40,7 @@ export class AuthService {
             findUser.last_password_update,
         );
 
-        const data = {
-            resetPass,
-            token
-        };
-
-        return ApiResponseDataHelper.sendSuccess(data);
+        return { resetPass, token, user: findUser };
     }
 
     private validateUpdatePass(susuUpdatePass: Date): boolean {

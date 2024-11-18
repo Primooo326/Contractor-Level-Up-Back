@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageMetaDto } from 'src/common/dtos-globals/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos-globals/page-options.dto';
@@ -9,12 +9,37 @@ import { Brackets, Repository } from 'typeorm';
 import { CreOrUpdUserDto } from './dto/cre-upd-user.dto';
 import { UserLoginDto } from 'src/common/dto/user-login.dto';
 import * as crypto from 'crypto';
+import { ChangePassDto } from './dto/change-pass.dto';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(ConUser, 'CON') private repositoryConUser: Repository<ConUser>,
     ) { }
+
+    async changePassword(dto: ChangePassDto, user: UserLoginDto) {
+        const { newPassword, repeatPassword } = dto;
+
+        if (newPassword !== repeatPassword) throw new NotFoundException(`Las contraseñas no coinciden`);
+
+        const findUser = await this.repositoryConUser.findOne({
+            where: { id: user.userId },
+        });
+
+        const encryptedPassword = await this.encryptPassword(newPassword);
+
+        if (encryptedPassword === findUser.password) throw new NotFoundException(`La contraseña no puede ser igual a la anterior`);
+
+        const now = new Date();
+        now.setHours(now.getHours() - 5);
+
+        await this.repositoryConUser.update({id: user.userId}, {
+            password: encryptedPassword,
+            last_password_update: now
+        })
+
+        return ApiResponseDataHelper.sendSuccess(user, 'Contraseña actualizada con éxito');
+    }
 
     public async findAll(pageOptionsDto: PageOptionsDto, user: UserLoginDto): Promise<ResponseTypedApis> {
         try {

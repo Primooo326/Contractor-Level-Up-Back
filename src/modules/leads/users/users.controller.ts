@@ -8,6 +8,7 @@ import { CreOrUpdUserDto } from './dto/cre-upd-user.dto';
 import { JwtAuthGuard } from 'src/common/jwt/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ConUser } from 'src/db/con-entities/con-user.entity';
+import { ChangePassDto } from './dto/change-pass.dto';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -17,6 +18,11 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService
   ) { }
+
+  @Post('changePassword')
+  async changePassword(@Body() dto: ChangePassDto, @Request() req) {
+    return await this.usersService.changePassword(dto, req.user);
+  }
 
   @HttpCode(ResponseCodes.SUCCESS.OK)
   @Get()

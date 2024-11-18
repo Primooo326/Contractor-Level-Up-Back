@@ -3,10 +3,6 @@ import { IsBoolean, IsNotEmpty, IsString } from "class-validator";
 export class CreOrUpdUserDto {
     @IsNotEmpty()
     @IsString()
-    full_name: string;
-    
-    @IsNotEmpty()
-    @IsString()
     first_name: string;
 
     @IsNotEmpty()

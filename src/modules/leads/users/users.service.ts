@@ -70,10 +70,10 @@ export class UsersService {
             }
 
             const password = await this.encryptPassword(`${dto?.first_name}_${new Date().getFullYear()}`);
-            
+
             const created = this.repositoryConUser.create({
                 proyects_id: 2,
-                full_name: dto.full_name,
+                full_name: `${dto.first_name} ${dto.last_name}`,
                 first_name: dto.first_name,
                 last_name: dto.last_name,
                 is_admin: dto.is_admin,
@@ -100,7 +100,7 @@ export class UsersService {
             }
 
             await this.repositoryConUser.update(id, {
-                full_name: dto.full_name,
+                full_name: `${dto.first_name} ${dto.last_name}`,
                 first_name: dto.first_name,
                 last_name: dto.last_name,
                 is_admin: dto.is_admin,
@@ -140,5 +140,5 @@ export class UsersService {
         let encrypted = cipher.update(text, 'utf8', 'hex');
         encrypted += cipher.final('hex');
         return encrypted;
-      }
+    }
 }

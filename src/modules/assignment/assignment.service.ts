@@ -29,7 +29,12 @@ export class AssignmentService {
     const lastPage = Math.ceil(totalPages / limit);
 
     const [rows] = await this.pool.promise().query(
-      'SELECT * FROM assignment WHERE estado = ? ORDER BY ID DESC LIMIT ? OFFSET ?',
+      `SELECT a.*, u.* 
+         FROM assignment AS a 
+         JOIN users AS u ON a.id_user = u.id 
+         WHERE a.estado = ? 
+         ORDER BY a.ID DESC 
+         LIMIT ? OFFSET ?`,
       [true, limit, (page - 1) * limit]
     );
 

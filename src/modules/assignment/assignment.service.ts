@@ -3,16 +3,22 @@ import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { UpdateAssignmentDto } from './dto/update-assignment.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { mysqlConfig } from 'src/config/mysql.config';
+import { UserLoginDto } from 'src/common/dto/user-login.dto';
 
 @Injectable()
 export class AssignmentService {
   private pool = mysqlConfig;
 
 
-  async create(createAssignmentDto: CreateAssignmentDto) {
-    const { id_user, iduser_high_level, contact_id, full_name_contact, first_name_contact, last_name_contact, email, phone_contact } = createAssignmentDto;
-    const query = 'INSERT INTO assignment (id_user,iduser_high_level,contact_id,full_name_contact,first_name_contact,last_name_contact,email,phone_contact) VALUES (?,?,?,?,?,?,?,?)';
-    const values = [id_user, iduser_high_level, contact_id, full_name_contact, first_name_contact, last_name_contact, email, phone_contact];
+  async create(createAssignmentDto: CreateAssignmentDto, user: UserLoginDto) {
+    const { iduser_high_level, contact_id, full_name_contact, first_name_contact, last_name_contact, email_contact, phone_contact, email_assignment } = createAssignmentDto;
+
+    const id_user = user.userId;
+
+    const query = 'INSERT INTO assignment (id_user,iduser_high_level,contact_id,full_name_contact,first_name_contact,last_name_contact,email_contact,phone_contact,email_assignment) VALUES (?,?,?,?,?,?,?,?,?)';
+
+    const values = [id_user, iduser_high_level, contact_id, full_name_contact, first_name_contact, last_name_contact, email_contact, phone_contact, email_assignment];
+
     try {
       const result = await this.pool.promise().query(query, values);
       return result;
@@ -23,7 +29,7 @@ export class AssignmentService {
 
   async findAll(paginationDto: PaginationDto) {
     const { page, limit } = paginationDto;
-    const [totalRowsResult] = await this.pool.promise().query('SELECT COUNT(*) AS total FROM assignment WHERE estado = ?', [true]);
+    const [totalRowsResult] = await this.pool.promise().query('SELECT COUNT(*) AS total FROM assignment WHERE state = ?', [true]);
 
     const totalPages = totalRowsResult[0].total;
     const lastPage = Math.ceil(totalPages / limit);
@@ -32,7 +38,7 @@ export class AssignmentService {
       `SELECT a.*, u.* 
          FROM assignment AS a 
          JOIN users AS u ON a.id_user = u.id 
-         WHERE a.estado = ? 
+         WHERE a.state = ? 
          ORDER BY a.ID DESC 
          LIMIT ? OFFSET ?`,
       [true, limit, (page - 1) * limit]
@@ -50,7 +56,7 @@ export class AssignmentService {
 
   async findOne(id: number) {
     const [rows] = await this.pool.promise().query(
-      'SELECT * FROM assignment WHERE estado = ? AND ID = ? LIMIT 1',
+      'SELECT * FROM assignment WHERE state = ? AND ID = ? LIMIT 1',
       [true, id]
     );
     if (Array.isArray(rows) && rows.length === 0) {

@@ -1,15 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateAssignmentDto {
-
-    @IsNotEmpty()
-    @IsString()
-    id_user: string;
-
-    @IsNotEmpty()
-    @IsString()
-    iduser_high_level: string;
-
     @IsNotEmpty()
     @IsString()
     contact_id: string;
@@ -28,7 +19,7 @@ export class CreateAssignmentDto {
 
     @IsNotEmpty()
     @IsString()
-    email: string;
+    email_contact: string;
 
     @IsNotEmpty()
     @IsString()
@@ -36,9 +27,9 @@ export class CreateAssignmentDto {
 
     @IsOptional()
     @IsString()
-    status: boolean;
-
-    @IsOptional()
+    iduser_high_level?: string;
+    
+    @IsNotEmpty()
     @IsString()
-    assignment_date: Date;
+    email_assignment: string;
 }

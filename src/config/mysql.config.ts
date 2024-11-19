@@ -1,10 +1,13 @@
 import * as mysql from 'mysql2';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export const mysqlConfig = mysql.createPool({
-    host: '23.27.51.155',        
-    user: 'desarrollo',          
-    password: 'DevAng2024*!',   
-    database: 'contractor', 
+    host: process.env.DB_HOST,        
+    user: process.env.DB_USER,          
+    password: process.env.DB_PASSWORD,    
+    database: process.env.DB_DATABASE,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

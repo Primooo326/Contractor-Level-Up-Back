@@ -31,7 +31,7 @@ export class AuthService {
 
         if (encrypted !== findUser.password) return ApiResponseDataHelper.sendError('Contraseña incorrecta');
 
-        const payload = { userId: findUser.id };
+        const payload = { userId: findUser.id, isAdmin: findUser.is_admin };
         const token = this.jwtService.sign(payload, {
             expiresIn: '1d',
         });

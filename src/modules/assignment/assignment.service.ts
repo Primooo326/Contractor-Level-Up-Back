@@ -35,7 +35,32 @@ export class AssignmentService {
     const lastPage = Math.ceil(totalPages / limit);
 
     const [rows] = await this.pool.promise().query(
-      `SELECT a.*, u.* 
+      `SELECT 
+        a.id AS id_contact,
+        a.id_user AS id_user_contact,
+        a.contact_id AS contact_id_contact,
+        a.full_name_contact AS full_name_contact,
+        a.first_name_contact AS first_name_contact,
+        a.last_name_contact AS last_name_contact,
+        a.email_contact AS email_contact,
+        a.phone_contact AS phone_contact,
+        a.iduser_high_level AS iduser_high_level_contact,
+        a.email_assignment AS email_assignment_contact,
+        a.state AS state_contact,
+        a.assignment_date AS assignment_date_contact,
+        u.id AS id_user,
+        u.proyects_id AS proyects_id_user,
+        u.full_name AS full_name_user,
+        u.first_name AS first_name_user,
+        u.last_name AS last_name_user,
+        u.is_admin AS is_admin_user,
+        u.email AS email_user,
+        u.password AS password_user,
+        u.last_password_update AS last_password_update_user,
+        u.state AS state_user,
+        u.created_at AS created_at_user,
+        u.updated_at AS updated_at_user
+
          FROM assignment AS a 
          JOIN users AS u ON a.id_user = u.id 
          WHERE a.state = ? 

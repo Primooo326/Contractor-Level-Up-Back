@@ -6,9 +6,6 @@ export class Assignment {
     
     @Column()
     id_user:string;
-    
-    @Column()
-    iduser_high_level:string;
 
     @Column()
     contact_id:string;
@@ -23,13 +20,19 @@ export class Assignment {
     last_name_contact:string;
 
     @Column()
-    email:string;
+    email_contact:string;
 
     @Column()
     phone_contact:string;
+    
+    @Column()
+    iduser_high_level:string;
+    
+    @Column()
+    email_assignment:string;
 
     @Column()
-    status:boolean;
+    state:boolean;
 
     @Column()
     assignment_date:Date;

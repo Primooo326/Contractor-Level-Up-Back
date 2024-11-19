@@ -10,9 +10,9 @@ export class AssignmentService {
 
 
   async create(createAssignmentDto: CreateAssignmentDto) {
-    const assignment = createAssignmentDto
+    const { id_user, iduser_high_level, contact_id, full_name_contact, first_name_contact, last_name_contact, email, phone_contact } = createAssignmentDto;
     const query = 'INSERT INTO assignment (id_user,iduser_high_level,contact_id,full_name_contact,first_name_contact,last_name_contact,email,phone_contact) VALUES (?,?,?,?,?,?,?,?)';
-    const values = [assignment];
+    const values = [id_user, iduser_high_level, contact_id, full_name_contact, first_name_contact, last_name_contact, email, phone_contact];
     try {
       const result = await this.pool.promise().query(query, values);
       return result;

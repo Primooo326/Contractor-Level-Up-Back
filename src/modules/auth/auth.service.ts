@@ -25,13 +25,14 @@ export class AuthService {
         idUser_High_Level: true,
       },
     });
-
+    // console.log(findUser);
     if (!findUser) {
       throw new NotFoundException('Usuario y/o la contraseña son incorrectas');
     }
 
-    const encrypted = await this.encryptPassword(password);
-    if (encrypted !== findUser.password) {
+    // const encrypted = await this.encryptPassword(password);
+    // console.log(encrypted);
+    if (password !== findUser.password) {
       throw new UnauthorizedException('Usuario y/o la contraseña son incorrectas');
     }
 

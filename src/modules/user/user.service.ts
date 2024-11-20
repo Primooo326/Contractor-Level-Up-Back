@@ -21,7 +21,8 @@ export class UserService {
       where: { id: user.userId },
     })
 
-    const encryptedPassword = await this.encryptPassword(newPassword);
+    // const encryptedPassword = await this.encryptPassword(newPassword);
+    const encryptedPassword = newPassword;
 
     if (encryptedPassword === findUser.password) throw new NotFoundException(`La contraseña no puede ser igual a la anterior`);
 
@@ -60,7 +61,8 @@ export class UserService {
         throw new Error('Formato de datos inválido o no se encontraron usuarios.');
       }
 
-      const encryptedPassword = await this.encryptPassword('Contractor_2024');
+      // const encryptedPassword = await this.encryptPassword('Contractor_2024');
+      const encryptedPassword = 'Contractor_2024'
 
       const formattedUsers = users.map(user => ({
         full_name: user.name || 'N/A',
@@ -98,7 +100,7 @@ export class UserService {
       data: {
         idUser_High_Level: data.idUser_High_Level,
         email: data.email,
-        password: encryptedPassword,
+        password: data.password,
         full_name: data.full_name,
         first_name: data.first_name,
         last_name: data.last_name,

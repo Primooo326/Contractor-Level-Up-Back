@@ -49,7 +49,7 @@ export class UserService {
         'https://services.leadconnectorhq.com/users/?locationId=7gcRvmSzndyAWZHzYU01',
         {
           headers: {
-            Authorization: 'Bearer pit-4cc3bf3a-e794-4977-a1dd-6d2ae15a2971',
+            Authorization: 'Bearer pit-2af37261-968e-4764-a16f-00bd69676be0',
             'Content-Type': 'application/json',
             version: '2021-07-28',
           },

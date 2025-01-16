@@ -20,6 +20,11 @@ export class MessagesLogController {
     return this.messagesLogService.create(dto, req.user);
   }
 
+  @Post('validateCount')
+  async validateCount(@Body() dto: ValidateCountDto, @Request() req) {
+    return await this.messagesLogService.validateCount(dto, req.user);
+  }
+  
   @Post('validateFromNumber')
   async validateFromNumber(@Body() dto: {email: string}, @Request() req) {
     return await this.messagesLogService.validateFromNumber(dto, req.user);

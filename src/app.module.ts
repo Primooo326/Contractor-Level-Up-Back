@@ -14,6 +14,7 @@ import { ConMysqlConfig } from './db/con-mssql.config';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { LeadsModule } from './modules/leads/leads.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { LeadsModule } from './modules/leads/leads.module';
     PhoneModule,
     AssignmentModule,
     ProyectsModule,
-    LeadsModule
+    LeadsModule,
+    SharedModule
   ],
 })
 export class AppModule { }

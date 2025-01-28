@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ApiResponseDataHelper } from 'src/common/helpers/api-response-data.helper';
 import { ResponseTypedApis } from 'src/common/interfaces/api-response-typed.interface';
-import axios from 'axios';
 import * as FormData from 'form-data';
-
+import { fetchApiGoHighLevel } from 'src/common/instances';
 @Injectable()
 export class FilesService {
     public async upload(file: Express.Multer.File): Promise<ResponseTypedApis> {
-        const goHighLevelApi = process.env.GOHIGHLEVEL_API;
         const goHighLevelConversationId = process.env.GOHIGHLEVEL_CONVERSATION_ID;
         const goHighLevelLocationId = process.env.GOHIGHLEVEL_LOCATION_ID;
         const goHighLevelToken = process.env.GHLToken;
@@ -22,25 +20,37 @@ export class FilesService {
         formData.append('locationId', goHighLevelLocationId);
 
         try {
-            const response = await axios.post(
-                `${goHighLevelApi}/conversations/messages/upload`,
+            const response = await fetchApiGoHighLevel.post(
+                '/conversations/messages/upload',
                 formData,
                 {
-                    headers: {
-                        Authorization: `Bearer ${goHighLevelToken}`,
-                        'Version': '2021-04-15',
-                        ...formData.getHeaders(),
-                    },
-                    timeout: 10000,
-                }
+                    Authorization: `Bearer ${goHighLevelToken}`,
+                    Version: '2021-04-15',
+                    ...formData.getHeaders(),
+                },
             );
+            //   const response = await axios.post(
+            //     `${goHighLevelApi}/conversations/messages/upload`,
+            //     formData,
+            //     {
+            //       headers: {
+            //         Authorization: `Bearer ${goHighLevelToken}`,
+            //         Version: '2021-04-15',
+            //         ...formData.getHeaders(),
+            //       },
+            //       timeout: 10000,
+            //     },
+            //   );
 
-            const uploadedFiles = response.data.uploadedFiles;
+            const uploadedFiles = response.uploadedFiles;
             const fileUrl = Object.values(uploadedFiles)[0];
 
             console.log('File URL =>', fileUrl);
 
-            return ApiResponseDataHelper.sendSuccess(fileUrl, 'Archivo cargado exitosamente');
+            return ApiResponseDataHelper.sendSuccess(
+                fileUrl,
+                'Archivo cargado exitosamente',
+            );
         } catch (error) {
             console.error('Error al subir el archivo:', error);
             return ApiResponseDataHelper.sendError('Error al cargar el archivo.');

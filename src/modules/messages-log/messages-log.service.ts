@@ -4,8 +4,8 @@ import { MessageDto } from '../user/dto/message-user.dto';
 import { CreateMessageLogDto } from './dto/create-message-log.dto';
 import { UserLoginDto } from 'src/common/dto/user-login.dto';
 import { ValidateCountDto } from './dto/validate-count.dto';
-import axios from 'axios';
-
+import { fetchApiNotion } from 'src/common/instances';
+// import axios from 'axios';
 @Injectable()
 export class MessagesLogService {
     constructor(private readonly prisma: PrismaService) { }
@@ -13,8 +13,12 @@ export class MessagesLogService {
     async Messages(filters: MessageDto) {
         const { userIds, fechaInicial, fechaFinal } = filters;
 
-        const ids = userIds ? userIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id)) : [];
-        const fechaInicio = fechaInicial ? new Date(fechaInicial) : new Date(new Date().setHours(0, 0, 0, 0));
+        const ids = userIds
+            ? userIds.map((id) => parseInt(id, 10)).filter((id) => !isNaN(id))
+            : [];
+        const fechaInicio = fechaInicial
+            ? new Date(fechaInicial)
+            : new Date(new Date().setHours(0, 0, 0, 0));
         const fechaFin = fechaFinal ? new Date(fechaFinal) : new Date();
 
         const whereConditions: any = {
@@ -45,41 +49,52 @@ export class MessagesLogService {
                 toNumber: dto.toNumber,
                 messageContent: dto.messageContent,
                 sentAt: now,
-            }
+            },
         });
 
         return userMessageLog;
     }
 
     async validateFromNumber(dto: { email: string }, user: UserLoginDto) {
-        const notionApi = process.env.NOTION_API;
-        const notionDatabaseId = process.env.NOTION_DATABASE_ID;
-        const notionKey = process.env.NOTION_KEY;
-        try {
-            const response = await axios.post(
-                `${notionApi}/v1/databases/${notionDatabaseId}/query`,
-                {
-                    "filter": {
-                        "property": "CLU Email",
-                        "email": {
-                            "contains": dto.email
-                        }
-                    }
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${notionKey}`,
-                        'Content-Type': 'application/json',
-                        'Notion-Version': '2022-02-22',
-                    },
-                    timeout: 10000,
-                }
-            );
+        user;
 
-            const crmPhone = response?.data?.results[0]?.properties?.["CRM Phone"]?.rich_text[0]?.text?.content || null;
+        try {
+            const response = await fetchApiNotion.post('/query', {
+                filter: {
+                    property: 'CLU Email',
+                    email: {
+                        contains: dto.email,
+                    },
+                },
+            });
+            //   const notionApi = process.env.NOTION_API;
+            //   const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+            //   const notionKey = process.env.NOTION_KEY;
+            //   const response = await axios.post(
+            //     `${notionApi}/v1/databases/${notionDatabaseId}/query`,
+            //     {
+            //       filter: {
+            //         property: 'CLU Email',
+            //         email: {
+            //           contains: dto.email,
+            //         },
+            //       },
+            //     },
+            //     {
+            //       headers: {
+            //         Authorization: `Bearer ${notionKey}`,
+            //         'Content-Type': 'application/json',
+            //         'Notion-Version': '2022-02-22',
+            //       },
+            //       timeout: 10000,
+            //     },
+            //   );
+
+            const crmPhone =
+                response?.results[0]?.properties?.['CRM Phone']?.rich_text[0]?.text
+                    ?.content || null;
             return { data: crmPhone ? crmPhone.trim() : null };
         } catch (error) {
-
             console.error('Error al cargar usuarios:', error);
             return { error: error };
         }
@@ -111,7 +126,8 @@ export class MessagesLogService {
         const { amountSend } = dto;
         const amountMessagesAllowed = messages_minute;
 
-        const canSendMessages = (amountMessagesDay + amountSend) <= amountMessagesAllowed;
+        const canSendMessages =
+            amountMessagesDay + amountSend <= amountMessagesAllowed;
 
         return {
             messagesSend: amountSend,

@@ -90,10 +90,11 @@ export class MessagesLogService {
             //     },
             //   );
 
-            const crmPhone =
+            const crmPhone: string =
                 response?.results[0]?.properties?.['CRM Phone']?.rich_text[0]?.text
                     ?.content || null;
-            return { data: crmPhone ? crmPhone.trim() : null };
+
+            return { data: (crmPhone && crmPhone.length > 5) ? crmPhone.trim() : null };
         } catch (error) {
             console.error('Error al cargar usuarios:', error);
             return { error: error };

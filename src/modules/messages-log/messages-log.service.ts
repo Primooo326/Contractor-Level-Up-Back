@@ -59,7 +59,7 @@ export class MessagesLogService {
         user;
 
         try {
-            const response = await fetchApiNotion.post('/query', {
+            const response: any = await fetchApiNotion.post('/query', {
                 filter: {
                     property: 'CLU Email',
                     email: {
@@ -90,11 +90,13 @@ export class MessagesLogService {
             //     },
             //   );
 
-            const crmPhone: string =
-                response?.results[0]?.properties?.['CRM Phone']?.rich_text[0]?.text
-                    ?.content || null;
+            const crmPhone: any =
+                response?.results[0]?.properties?.['CRM Phone']?.rich_text
+                    .map((d) => d.text.content)
+                    .toString()
+                    .replaceAll(',', '') || null;
 
-            return { data: (crmPhone && crmPhone.length > 5) ? crmPhone.trim() : null };
+            return { data: crmPhone && crmPhone.length > 5 ? crmPhone.trim() : null };
         } catch (error) {
             console.error('Error al cargar usuarios:', error);
             return { error: error };
